@@ -1,0 +1,89 @@
+2차원 배열에서 데이터를 뽑아 조건에 맞는 수식을 적용해 결과를 출력하는걸 의도하는 걸로 보인다 
+1. 1차답이은 80점으로 나온 이유
+  - 조건 중에서 보너스를 부여하는 부분에서 보너스 부여 이후 측정 시간을 초기화 하지 않아 점수가 낮았다.
+  - while 조건절이 아닌 for 문을 돌렸을때 점수가 낮은걸로 추측된다
+
+2. 2차답안을 최종 제출하여 100점 처리 
+  
+  
+  class Solution {
+  //2차답 
+    public int solution(int[] bandage, int health, int[][] attacks) {
+        int answer = 0;
+        int play_second = 0; //플레이시간
+        int max_second = attacks[attacks.length-1][0]; //마지막 공격 시간 ( 이 시간까지 반복 돌겁니다 )
+        
+        int attack_seq=0;
+        int band_sec = 0; //붕대 감는시간 ( 공격받으면 초기화됨 )
+        int max_health = health; //최대 체력을 미리 셋팅 
+        //attacks 몬스터 공격이 있는 배열 길이만큼 계속 돕니다 
+        
+        while ( play_second <= max_second ){
+            //공격받으면 붕대감는시간 초기화 
+            if(play_second == attacks[attack_seq][0]){
+                //공격시 hp 차감
+                health -= attacks[attack_seq][1];
+                band_sec =0;
+                attack_seq++;
+            }else{
+            //붕대감는시간 
+                band_sec+=1; //시간초늘려줌
+                health += bandage[1];
+                //붕대를 시전시간만큼 했으면 추가 보너스 
+                if( band_sec == bandage[0] ){
+                    health +=  bandage[2];
+                    band_sec = 0;
+                }
+            }
+            //공격 붕대감는거 끝났는데 hp가 더 높으면 max로 설정
+            health =  health >max_health ? max_health : health;
+            //health가 0보다 작으면 멈춤 
+            if(health<=0 ){ answer = -1; break;}
+            //System.out.println("health "+play_second +"==="+health);
+            play_second++;
+            answer = health;
+        }
+        return answer;
+    }
+    
+    /*
+    //1차답 
+    
+    public int solution(int[] bandage, int health, int[][] attacks) {
+        int answer = 0;
+        int max_health = health;
+        int band_seq=0;
+        int attack_seq=0;
+        
+        for(int i=0; i<=attacks[( attacks.length-1) ][0]; i++ ){ //마지막 공격 시간까지 시작 
+            band_seq+=1; //밴드 감는시간 
+            //공격받으면 
+            if(i == attacks[attack_seq][0]){
+                health -= attacks[attack_seq][1]; // 데미지 차감 //health = health- attacks[attack_seq][1];
+                attack_seq++;
+                band_seq=0;
+            }else{
+                //기본체력증가는 공격이 없을때 늘어나는걸 의도하는거 같음 
+                health +=  bandage[1];
+            }
+            //제약사향 3.bandage[0] 만큼 시간초가 흘럿으면 bandage[2] 보너스 
+            if( band_seq == bandage[0]){
+                health += bandage[2];
+                band_seq = 0; // 시전 시간 초기화 // 보너스 받고나서 시간 초기화하는걸 몰랏음 
+            }
+            //제약사항 1.max_health 보다 크면 안됨
+            if( max_health < health ) {
+                health = max_health;
+            //제약사항 2.health = 0 이면 -1 리턴 끝
+            }else if( health <=0 ) {
+                answer = -1;
+            }else{
+                answer = health;
+            }
+       }
+        return answer;
+    }
+    */
+}
+
+    
