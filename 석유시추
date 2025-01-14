@@ -1,0 +1,75 @@
+석유시추는 데이터 탐색 알고리즘을 어떻게 사용하는지를 판단하는 코드같다
+BFS 알고리즘이라는 방법이 있다. 
+
+DFS = depth 즉, 깊이를 먼저 탐색한 이후 가로로 확장하는 개념 
+BFS = breath , 깊이보다는 최대한 넓은 범위를 먼저 확장하는 개념 
+
+
+import java.util.*;
+
+class Solution {
+     public int solution(int[][] land) {
+         int max = Integer.MIN_VALUE;
+         //land 배열의 전체 길이가 얼마나 될지 모르기 때문에 
+         int height = land.length;   //세로길이
+         int width = land[0].length;//가로
+         
+         //BFS탐색을 위해 상하좌우를 정의한다
+         // 행의 이동을 정의 앞뒤
+         int [] dn = {1,-1,0,0 };
+         // 열의 이동 정의
+         int [] mn = {0,0,1,-1};
+         
+         //열 기준으로 탐색을 시작합니다
+         // land 배열의 너비를 먼저 측정해서 탐색을 시작한 bfs방식 
+         for(int i=0; i< width; i++){
+             int amount = 0; // 1 값을 가진 배열의 칸 크기를 저장할겁니다
+             boolean [][]visit = new boolean[height][width]; // land와 동일 크기의 boolean 배열을 만들어 방문여부를 체크해서 탐색여부결정
+             //깊이쪽으로 탐색 시작 
+             for( int j=0; j< height; j++){
+                 //값을 가져옴 
+                 if( land[j][i] == 1 && !visit[j][i] ){//값이 1인데 방문하지 않은곳이야? 그럼 저장해
+                     amount++; //발견한 1의 갯수를 증가해
+                     visit[j][i] = true; //방문했다고 표시해
+                     Queue<int[]> q = new LinkedList<>(); //큐를 하나 만들어서 
+                     q.offer( new int[]{j,i}); // 현재 위치를 저장해 
+                     
+                     //현재 위치기준으로 상하좌우를 볼거야
+                     //상하좌우 확인 후 q에서 뺄거기 때문에 q 가 비어있을때까진 계속 반복 
+                     while(! q.isEmpty()){
+                         int size = q.size();
+                         for( int s =0; s< size; s++){ //저장된 위치 크기만큼 돌겁니다 
+                             //큐에서 하나빼자
+                             int [] tmp = q.poll();
+                             //상하좌우는 총 4번이니까 
+                             for( int g =0; g<4; g++){
+                                 int check1 = tmp[0] + dn[g]; // q에 있는녀석한테 먼저 행위치 앞뒤를 체크할거
+                                 int check2 = tmp[1] + mn[g]; // q에 있는녀석한테 먼저 열위치 상하 를 체크할거
+                                 //일단 위치가 0보단 커야겟지?
+                                 if ( check1 >=0 && check2>=0
+                                     //행 위치가 특정 높이보단 작아야지?
+                                    && check1 < height
+                                     //열의 위치가 가로보단 작아야지?
+                                    && check2 < width 
+                                     // 이제 우리가 찾는값 1인지 보고 
+                                    && land[check1][check2]  ==1
+                                     // 아직 우리가 탐색한 곳이 아닌지 확인하고 
+                                    && !visit[check1][check2]
+                                    ){
+                                     //새로운 값 1이야! --> 그럼 기록하고 사이즈 늘려 
+                                     visit[check1][check2] = true;
+                                     amount++;
+                                     q.offer(new int[]{check1,check2}); //또추가해? 어차피 q 돌면서 계속 빼내면 없어져 
+                                 }
+                             }
+                         }
+                     }
+                 } 
+             }
+            //한줄 탐색이 끝나면 최대값을 비교해서 따로저장해 
+            max = Math.max(max,amount);
+         }
+         //탐색이 전체 끝나면 최대값을 리턴
+         return max;
+    }
+}
